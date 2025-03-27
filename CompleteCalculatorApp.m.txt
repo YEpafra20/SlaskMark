@@ -1,0 +1,115 @@
+classdef CompleteCalculatorApp < matlab.apps.AppBase
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure          matlab.ui.Figure
+        % Arithmetic operation components
+        editField1        matlab.ui.control.NumericEditField  % First number
+        editField2        matlab.ui.control.NumericEditField  % Second number
+        AddButton         matlab.ui.control.Button            % Add button
+        SubtractButton    matlab.ui.control.Button            % Subtract button
+        MultiplyButton    matlab.ui.control.Button            % Multiply button
+        DivideButton      matlab.ui.control.Button            % Divide button
+        % Linear equation components
+        editFieldA        matlab.ui.control.NumericEditField  % Coefficient a
+        editFieldB        matlab.ui.control.NumericEditField  % Constant b
+        editFieldC        matlab.ui.control.NumericEditField  % Right-hand side c
+        SolveLinearButton matlab.ui.control.Button            % Solve linear button
+        resultLabel       matlab.ui.control.Label             % Result display
+    end
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Callback for Add button
+        function AddButtonPushed(app, event)
+            num1 = app.editField1.Value;
+            num2 = app.editField2.Value;
+            result = num1 + num2;
+            app.resultLabel.Text = sprintf('Result: %.2f', result);
+        end
+
+        % Callback for Subtract button
+        function SubtractButtonPushed(app, event)
+            num1 = app.editField1.Value;
+            num2 = app.editField2.Value;
+            result = num1 - num2;
+            app.resultLabel.Text = sprintf('Result: %.2f', result);
+        end
+
+        % Callback for Multiply button
+        function MultiplyButtonPushed(app, event)
+            num1 = app.editField1.Value;
+            num2 = app.editField2.Value;
+            result = num1 * num2;
+            app.resultLabel.Text = sprintf('Result: %.2f', result);
+        end
+
+        % Callback for Divide button
+        function DivideButtonPushed(app, event)
+            num1 = app.editField1.Value;
+            num2 = app.editField2.Value;
+            if num2 == 0
+                app.resultLabel.Text = 'Error: Division by zero!';
+            else
+                result = num1 / num2;
+                app.resultLabel.Text = sprintf('Result: %.2f', result);
+            end
+        end
+
+        % Callback for Solve Linear button (solves ax + b = c)
+        function SolveLinearButtonPushed(app, event)
+            a = app.editFieldA.Value; % Coefficient of x
+            b = app.editFieldB.Value; % Constant term
+            c = app.editFieldC.Value; % Right-hand side
+            if a == 0
+                app.resultLabel.Text = 'Error: Coefficient of x cannot be zero!';
+            else
+                x = (c - b) / a;
+                app.resultLabel.Text = sprintf('Solution: x = %.2f', x);
+            end
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+        function startupFcn(app)
+            % Initialize any settings if needed
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+        function app = CompleteCalculatorApp
+            % Create UIFigure
+            app.UIFigure = uifigure('Name', 'Calculator & Linear Solver', 'Position', [100 100 400 500]);
+
+            % Arithmetic operation components
+            app.editField1 = uieditfield(app.UIFigure, 'numeric', 'Position', [50 400 100 22], ...
+                'Value', 0, 'Placeholder', 'Enter first number');
+            app.editField2 = uieditfield(app.UIFigure, 'numeric', 'Position', [250 400 100 22], ...
+                'Value', 0, 'Placeholder', 'Enter second number');
+            app.AddButton = uibutton(app.UIFigure, 'push', 'Position', [50 350 100 22], 'Text', 'Add', ...
+                'ButtonPushedFcn', @(btn,event) AddButtonPushed(app));
+            app.SubtractButton = uibutton(app.UIFigure, 'push', 'Position', [250 350 100 22], 'Text', 'Subtract', ...
+                'ButtonPushedFcn', @(btn,event) SubtractButtonPushed(app));
+            app.MultiplyButton = uibutton(app.UIFigure, 'push', 'Position', [50 300 100 22], 'Text', 'Multiply', ...
+                'ButtonPushedFcn', @(btn,event) MultiplyButtonPushed(app));
+            app.DivideButton = uibutton(app.UIFigure, 'push', 'Position', [250 300 100 22], 'Text', 'Divide', ...
+                'ButtonPushedFcn', @(btn,event) DivideButtonPushed(app));
+
+            % Linear equation components (ax + b = c)
+            app.editFieldA = uieditfield(app.UIFigure, 'numeric', 'Position', [50 200 100 22], ...
+                'Value', 0, 'Placeholder', 'a (coeff of x)');
+            app.editFieldB = uieditfield(app.UIFigure, 'numeric', 'Position', [175 200 100 22], ...
+                'Value', 0, 'Placeholder', 'b (constant)');
+            app.editFieldC = uieditfield(app.UIFigure, 'numeric', 'Position', [300 200 50 22], ...
+                'Value', 0, 'Placeholder', 'c');
+            app.SolveLinearButton = uibutton(app.UIFigure, 'push', 'Position', [50 150 300 22], 'Text', 'Solve Linear (ax + b = c)', ...
+                'ButtonPushedFcn', @(btn,event) SolveLinearButtonPushed(app));
+
+            % Result display
+            app.resultLabel = uilabel(app.UIFigure, 'Position', [50 100 300 22], 'Text', 'Result: ', ...
+                'HorizontalAlignment', 'center');
+        end
+    end
+end

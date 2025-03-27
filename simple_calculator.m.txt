@@ -1,0 +1,30 @@
+function simple_calculator()
+    fig = figure('Name', 'Calculator', 'NumberTitle', 'off', 'Position', [500, 300, 300, 400]);
+    editBox = uicontrol('Style', 'edit', 'Position', [10, 350, 280, 40], 'FontSize', 14, 'HorizontalAlignment', 'right');
+    
+    buttons = {'7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+'};
+    positions = reshape(reshape(1:16, 4, 4)', 1, []);
+    
+    for i = 1:16
+        uicontrol('Style', 'pushbutton', 'String', buttons{i}, 'FontSize', 14, 'Position', [10 + mod(positions(i)-1, 4) * 70, 250 - floor((positions(i)-1) / 4) * 50, 60, 40],...
+            'Callback', @(src, event) buttonPress(src, editBox));
+    end
+    
+    uicontrol('Style', 'pushbutton', 'String', 'C', 'FontSize', 14, 'Position', [10, 50, 280, 40], 'Callback', @(src, event) set(editBox, 'String', ''));
+end
+
+function buttonPress(src, editBox)
+    currentText = get(editBox, 'String');
+    buttonText = get(src, 'String');
+    
+    if strcmp(buttonText, '=')
+        try
+            result = eval(currentText);
+            set(editBox, 'String', num2str(result));
+        catch
+            set(editBox, 'String', 'Error');
+        end
+    else
+        set(editBox, 'String', [currentText buttonText]);
+    end
+end
